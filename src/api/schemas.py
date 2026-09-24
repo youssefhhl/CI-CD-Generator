@@ -18,7 +18,6 @@ class DetectRequest(BaseModel):
     """Body for ``POST /detect``."""
 
     file_paths: List[str] = Field(
-        default_factory=list,
         description="Repository file paths to inspect (relative or nested).",
         examples=[["src/app/package.json", "README.md"]],
     )
