@@ -1,0 +1,20 @@
+name: %%WORKFLOW_NAME%%
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "%%VERSION%%"
+%%LINT_STEP%%
+%%TEST_STEP%%
