@@ -52,6 +52,20 @@ class GenerateRequest(BaseModel):
         description="Public GitHub repository URL.",
         examples=["https://github.com/owner/repository"],
     )
+    include_docker: bool = Field(
+        default=False,
+        description=(
+            "Whether to include a Docker build step. Requires the repository "
+            "to contain a Dockerfile."
+        ),
+    )
+    push_docker: bool = Field(
+        default=False,
+        description=(
+            "Whether to push the built image to GitHub Container Registry "
+            "(GHCR). Requires include_docker=True."
+        ),
+    )
 
 
 class ProjectProfilePayload(BaseModel):
@@ -65,6 +79,7 @@ class ProjectProfilePayload(BaseModel):
     test_command: Optional[str] = None
     lint_tool: Optional[str] = None
     lint_command: Optional[str] = None
+    build_command: Optional[str] = None
     has_docker: bool = False
 
     @classmethod
@@ -79,6 +94,7 @@ class ProjectProfilePayload(BaseModel):
             test_command=profile.test_command,
             lint_tool=profile.lint_tool,
             lint_command=profile.lint_command,
+            build_command=profile.build_command,
             has_docker=profile.has_docker,
         )
 
