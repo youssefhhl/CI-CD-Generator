@@ -7,6 +7,7 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+%%PERMISSIONS%%
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,4 +18,5 @@ jobs:
           distribution: temurin
           java-version: "%%VERSION%%"
 %%LINT_STEP%%
-%%TEST_STEP%%
+%%BUILD_STEP%%
+%%DOCKER_STEP%%
