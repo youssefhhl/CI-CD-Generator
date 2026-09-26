@@ -7,11 +7,12 @@ evolve independently of the business logic.
 
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
 from src.detector import DetectionResult
+from src.domain import ProjectProfile
 
 
 class DetectRequest(BaseModel):
@@ -41,4 +42,65 @@ class DetectResponse(BaseModel):
             language=result.language.value,
             matched_markers=result.matched_markers,
             is_supported=result.is_supported,
+        )
+
+
+class GenerateRequest(BaseModel):
+    """Body for ``POST /generate``."""
+
+    repo_url: str = Field(
+        description="Public GitHub repository URL.",
+        examples=["https://github.com/owner/repository"],
+    )
+
+
+class ProjectProfilePayload(BaseModel):
+    """Serialized :class:`~src.domain.ProjectProfile` for API responses."""
+
+    language: str
+    version: Optional[str] = None
+    framework: Optional[str] = None
+    build_tool: Optional[str] = None
+    test_framework: Optional[str] = None
+    test_command: Optional[str] = None
+    lint_tool: Optional[str] = None
+    lint_command: Optional[str] = None
+    has_docker: bool = False
+
+    @classmethod
+    def from_profile(cls, profile: ProjectProfile) -> "ProjectProfilePayload":
+        """Adapt a domain :class:`ProjectProfile` into the API payload."""
+        return cls(
+            language=profile.language.value,
+            version=profile.version,
+            framework=profile.framework,
+            build_tool=profile.build_tool,
+            test_framework=profile.test_framework,
+            test_command=profile.test_command,
+            lint_tool=profile.lint_tool,
+            lint_command=profile.lint_command,
+            has_docker=profile.has_docker,
+        )
+
+
+class GenerateResponse(BaseModel):
+    """Response for ``POST /generate``."""
+
+    language: str = Field(description="Detected primary language.")
+    profile: ProjectProfilePayload = Field(
+        description="The analyzed project profile."
+    )
+    workflow_yaml: str = Field(
+        description="Generated GitHub Actions workflow YAML."
+    )
+
+    @classmethod
+    def from_parts(
+        cls, profile: ProjectProfile, workflow_yaml: str
+    ) -> "GenerateResponse":
+        """Build the response from a profile and its generated workflow."""
+        return cls(
+            language=profile.language.value,
+            profile=ProjectProfilePayload.from_profile(profile),
+            workflow_yaml=workflow_yaml,
         )
