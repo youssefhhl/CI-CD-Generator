@@ -11,7 +11,12 @@ from fastapi import Depends, FastAPI, HTTPException
 
 from src.analyzer import ProjectAnalyzer, UnsupportedProjectError
 from src.detector import StackDetector
-from src.generator import PipelineBuilder, UnsupportedLanguageError
+from src.generator import (
+    DockerNotAvailableError,
+    DockerPushRequiresDockerError,
+    PipelineBuilder,
+    UnsupportedLanguageError,
+)
 from src.repository import (
     GitHubRepositoryReader,
     InvalidRepositoryUrlError,
@@ -106,7 +111,17 @@ def generate(
         raise HTTPException(status_code=422, detail=str(exc))
 
     try:
-        workflow_yaml = builder.build(profile)
+        workflow_yaml = builder.build(
+            profile,
+            include_docker=request.include_docker,
+            push_docker=request.push_docker,
+        )
+    except DockerNotAvailableError as exc:
+        # User requested Docker but the repository has no Dockerfile.
+        raise HTTPException(status_code=422, detail=str(exc))
+    except DockerPushRequiresDockerError as exc:
+        # User requested a push without enabling Docker.
+        raise HTTPException(status_code=422, detail=str(exc))
     except UnsupportedLanguageError as exc:  # pragma: no cover - defensive
         raise HTTPException(status_code=422, detail=str(exc))
 
