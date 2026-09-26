@@ -74,6 +74,7 @@ class NodeParser:
             test_command=self._test_command(scripts, test_framework),
             lint_tool=lint_tool,
             lint_command=self._lint_command(scripts, lint_tool),
+            build_command=self._build_command(scripts),
             has_docker=has_docker,
         )
 
@@ -155,6 +156,18 @@ class NodeParser:
             return "npm run lint"
         if lint_tool == "eslint":
             return "npx eslint ."
+        return None
+
+    @staticmethod
+    def _build_command(scripts: Dict[str, str]) -> Optional[str]:
+        """Return ``npm run build`` iff a non-empty ``scripts.build`` exists.
+
+        Node projects have no conventional build step by default, so this is
+        only set when the project explicitly declares a build script.
+        """
+        script = scripts.get("build")
+        if isinstance(script, str) and script.strip():
+            return "npm run build"
         return None
 
 

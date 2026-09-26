@@ -46,6 +46,9 @@ class JavaParser:
     _BUILD_TOOL = "maven"
     #: Constant test command for any Maven project.
     _TEST_COMMAND = "mvn test"
+    #: Constant build command for any Maven project. ``mvn package`` compiles,
+    #: runs the test phase, and produces the artifact.
+    _BUILD_COMMAND = "mvn package"
 
     def parse(
         self,
@@ -74,6 +77,7 @@ class JavaParser:
                 language=Language.JAVA,
                 build_tool=self._BUILD_TOOL,
                 test_command=self._TEST_COMMAND,
+                build_command=self._BUILD_COMMAND,
                 has_docker=has_docker,
             )
 
@@ -87,6 +91,7 @@ class JavaParser:
             test_command=self._TEST_COMMAND,
             lint_tool=lint_tool,
             lint_command=lint_command,
+            build_command=self._BUILD_COMMAND,
             has_docker=has_docker,
         )
 

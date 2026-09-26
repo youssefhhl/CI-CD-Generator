@@ -43,6 +43,9 @@ class ProjectProfile:
         lint_tool: Lint/static-analysis tool (e.g. ``"ruff"``,
             ``"checkstyle"``, ``"eslint"``).
         lint_command: Command used to run the linter (e.g. ``"ruff check ."``).
+        build_command: Command used to build the application/artifact
+            (e.g. ``"mvn package"``, ``"npm run build"``), or ``None`` when the
+            project has no build step.
         has_docker: Whether the project ships a Docker setup. Defaults to
             ``False`` when no Dockerfile is detected.
     """
@@ -55,4 +58,5 @@ class ProjectProfile:
     test_command: Optional[str] = None
     lint_tool: Optional[str] = None
     lint_command: Optional[str] = None
+    build_command: Optional[str] = None
     has_docker: bool = False
